@@ -2,9 +2,7 @@
   <div class="recipe-container">
     <h1 class="text-center">Recipe Information</h1>
 
-    <router-link
-      :to="{ name: 'home', query: { q: searchQuery } }"
-      class="btn-back"
+    <router-link :to="{ name: 'home', query: { q: query } }" class="btn-back"
       >Back to Results</router-link
     >
 
@@ -19,50 +17,36 @@
 
       <div class="recipe-details">
         <p><strong>Servings:</strong> {{ recipe.servings }}</p>
-
         <p>
-          <strong>Preparation Time:</strong> {{ recipe.readyInMinutes }} minutes
+          <strong>Preparation Time:</strong>
+          {{ recipe.preparationMinutes }} minutes
         </p>
-
-        <p v-if="recipe.cookingMinutes">
+        <p>
           <strong>Cooking Time:</strong> {{ recipe.cookingMinutes }} minutes
         </p>
+        <p><strong>Ready in:</strong> {{ recipe.readyInMinutes }} minutes</p>
 
         <p v-if="recipe.aggregateLikes">Likes: {{ recipe.aggregateLikes }}</p>
-
         <p v-if="recipe.healthScore">
           <strong>Health Score:</strong> {{ recipe.healthScore }}/100
         </p>
-
-        <p v-if="recipe.diets.length">
-          <strong>Diets:</strong> {{ recipe.diets.join(", ") }}
-        </p>
-
-        <p v-if="recipe.dishTypes.length">
-          <strong>Dish Type:</strong> {{ recipe.dishTypes.join(", ") }}
-        </p>
-
-        <p v-if="recipe.summary" v-html="recipe.summary"></p>
-
-        <p v-if="recipe.sourceName">
-          <strong>Source:</strong>
-          <a :href="recipe.sourceUrl" target="_blank"
-            >{{ recipe.sourceName }}
-          </a>
-        </p>
-
         <p v-if="recipe.spoonacularScore">
           <strong>Spoonacular Score:</strong> {{ recipe.spoonacularScore }}
         </p>
-
         <p v-if="recipe.pricePerServing">
           <strong>Price Per Serving:</strong> ${{
             recipe.pricePerServing.toFixed(2)
           }}
         </p>
+        <p v-if="recipe.sourceName">
+          <strong>Source:</strong>
+          <a :href="recipe.sourceUrl" target="_blank">{{
+            recipe.sourceName
+          }}</a>
+        </p>
 
-        <p v-if="recipe.creditsText">
-          <strong>Credits:</strong> {{ recipe.creditsText }}
+        <p v-if="recipe.dishTypes">
+          <strong>Dish Types:</strong> {{ recipe.dishTypes.join(", ") }}
         </p>
       </div>
     </div>
@@ -78,17 +62,24 @@ export default {
   name: "RecipeInfo",
   setup() {
     const recipeStore = useRecipeStore();
+    const recipe = ref([]);
     const route = useRoute();
     const imageError = ref(false);
+    const query = ref("");
 
     onMounted(() => {
-      recipeStore.fetchRecipeInfo(route.params.id);
+      recipeStore.fetchRecipeInfo(route.params.id).then(() => {
+        recipe.value = recipeStore.recipes.find(
+          (r) => r.id === parseInt(route.params.id)
+        );
+      });
     });
 
     return {
-      recipe: recipeStore.recipe,
+      recipeStore,
+      recipe,
       imageError,
-      searchQuery: recipeStore.searchQuery,
+      query,
     };
   },
 };
@@ -145,7 +136,6 @@ strong {
 
 .btn-back {
   display: inline-block;
-  /* Changer le style pour rendre le lien comme un bouton */
   background-color: #007bff;
   color: white;
   border: none;
@@ -155,9 +145,7 @@ strong {
   margin-bottom: 20px;
   font-size: 16px;
   text-decoration: none;
-  /* Supprime le soulignement */
   text-align: center;
-  /* Centre le texte */
 }
 
 .btn-back:hover {

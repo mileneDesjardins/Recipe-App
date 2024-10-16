@@ -7,23 +7,19 @@ export const useRecipeStore = defineStore("recipeStore", () => {
   const recipesMain = ref(recipesData.recipes);
   const recipes = ref(recipesData.recipes);
   const recipe = ref([]);
-  const searchQuery = ref("");
   let oldQuery = ref("");
   let query = ref("");
 
   const searchRecipes = async (query) => {
     // Met à jour oldQuery et searchQuery
-    oldQuery.value = searchQuery.value;
-    searchQuery.value = query;
+    oldQuery.value = query.value;
 
     if (query === "") {
       // Si le champ de recherche est vide, retourne toutes les recettes
-      recipes.value = recipesMain.value;
+      return recipesMain.value;
     } else {
-      console.log(query);
-      const queryWords = query.toLowerCase().split(" "); // Divise la requête en mots
+      const queryWords = query.toLowerCase().split(" ");
 
-      // Filtre les recettes qui contiennent au moins un mot de la requête
       recipes.value = recipesMain.value.filter((recipe) => {
         return queryWords.some((word) =>
           recipe.title.toLowerCase().includes(word)
@@ -34,8 +30,9 @@ export const useRecipeStore = defineStore("recipeStore", () => {
 
   const fetchRecipeInfo = async (id) => {
     try {
-      // recipe.value = await getRecipeInfo(id);
-      recipes.value = recipesMain;
+      // Cherchez la recette par son ID dans le tableau recipesMain
+      const foundRecipe = recipes.value.find((recipe) => recipe.id === id);
+      recipe.value = foundRecipe || null; // Mettez à jour recipe avec la recette trouvée
     } catch (error) {
       console.error("Error fetching recipe info:", error);
     }
@@ -44,7 +41,6 @@ export const useRecipeStore = defineStore("recipeStore", () => {
   return {
     recipes,
     recipe,
-    searchQuery,
     query,
     searchRecipes,
     recipesMain,

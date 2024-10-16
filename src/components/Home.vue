@@ -39,7 +39,10 @@ export default {
     const router = useRouter();
 
     const searchPageInfo = (id) => {
-      router.push({ name: "info", params: { id } });
+      router.push({
+        name: "info",
+        params: { id },
+      });
     };
 
     return {
