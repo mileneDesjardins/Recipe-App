@@ -2,46 +2,35 @@
   <div>
     <v-app-bar :elevation="2">
       <v-app-bar-title>Find a recipe</v-app-bar-title>
-      <input v-model="searchQuery" placeholder="Search for recipes" class="search-input" />
-      <v-btn class="search-button" @click="handleSearch">Search</v-btn>
+      <input
+        v-model="query"
+        placeholder="Search for recipes"
+        class="search-input"
+      />
+      <v-btn class="search-button" @click="recipeStore.searchRecipes(query)"
+        >Search</v-btn
+      >
     </v-app-bar>
   </div>
 </template>
 
 <script>
-import { ref, watch } from 'vue';
+import { ref, watch } from "vue";
+import { useRecipeStore } from "../stores/recipeStore";
 
 export default {
-  name: 'MainNav',
-  props: {
-    searchRecipes: {
-      type: Function,
-      required: true,
-    },
-    searchQuery: { // Ajoutez une nouvelle prop pour la valeur de recherche
-      type: String,
-      required: true,
-    },
-  },
-  setup(props) {
-    const searchQuery = ref(props.searchQuery);
+  name: "MainNav",
 
-    // Mettez à jour la valeur de recherche lorsque la prop change
-    watch(() => props.searchQuery, (newVal) => {
-      searchQuery.value = newVal;
-    });
-
-    const handleSearch = () => {
-      props.searchRecipes(searchQuery.value);
-      searchQuery.value = '';
-    };
+  setup() {
+    const recipeStore = useRecipeStore();
+    const query = ref("");
 
     return {
-      searchQuery,
-      handleSearch,
+      recipeStore,
+      query,
     };
-  }
-}
+  },
+};
 </script>
 
 <style scoped>
@@ -56,7 +45,6 @@ export default {
   /* Espacement interne */
   transition: background-color 0.3s;
   /* Transition pour le survol */
-
 }
 
 .search-button:hover {

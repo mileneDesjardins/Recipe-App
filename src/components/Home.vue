@@ -1,8 +1,5 @@
 <template>
-  <MainNav
-    :searchRecipes="recipeStore.searchRecipes"
-    :searchQuery="recipeStore.searchQuery"
-  />
+  <MainNav />
   <div class="home-container">
     <!-- <div
        > 0"
@@ -10,7 +7,7 @@
     > -->
 
     <div
-      v-if="recipeStore.recipes.length"
+      v-if="recipeStore.recipes.length > 0"
       class="d-flex flex-sm-wrap justify-center"
     >
       <CardRecipe
